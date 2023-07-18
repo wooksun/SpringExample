@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="student" class="com.tjoeun.springDI_java.Student">
+		<constructor-arg value="최진욱xml"/>
+		<constructor-arg value="25"/>
+		<constructor-arg>
+			<list>
+				<value>축구</value>
+				<value>게임</value>
+				<value>영화보기</value>
+			</list>
+		</constructor-arg>
+		<property name="weight" value="83"></property>
+		<property name="height" value="185"></property>
+	</bean>
+
+</beans>

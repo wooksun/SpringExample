@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- 
+		xml 파일에서 java 파일의 bean 설정 정보를 읽어오려면 java 파일에서 @Configuration 어노테이션을 붙여서 설정한 정보를
+		읽을 수 있게 해야한다.
+		context namespace를 추가한다.
+			=> xmlns:context="http://www.springframework.org/schema/context"가 xml 파일에 자동으로 추가된다.
+		<context:annotation-config> 태그를 추가해서 @Configuration 어노테이션을 붙여서 java 파일에서 설정한 bean 설정 정보를 읽어올 수 있다.
+	 -->
+	 <context:annotation-config/>
+	 
+	 <!-- 
+	 	@Configuration 어노테이션을 붙여서 bean을 설정한 java 클래스의 bean을 만든다.
+	 	java 파일의 @Bean 어노테이션을 붙여준 메소드 이름이 id 역할을 하므로, <bean> 태그에서 id 속성을 지정하면 에러가 발생된다.
+	 -->
+	  <bean class="com.tjoeun.springDI_xml_in_java.ApplicationConfig"/>
+	 
+
+	<bean id="student" class="com.tjoeun.springDI_xml_in_java.Student">
+		<constructor-arg value="최진욱xml"/>
+		<constructor-arg value="25"/>
+		<constructor-arg>
+			<list>
+				<value>축구</value>
+				<value>게임</value>
+				<value>영화보기</value>
+			</list>
+		</constructor-arg>
+		<property name="weight" value="83"></property>
+		<property name="height" value="185"></property>
+	</bean>
+
+</beans>
