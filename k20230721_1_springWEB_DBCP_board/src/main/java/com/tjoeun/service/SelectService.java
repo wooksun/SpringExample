@@ -1,5 +1,6 @@
 package com.tjoeun.service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.ui.Model;
 
 import com.tjoeun.dao.MvcBoardDAO;
+import com.tjoeun.vo.MvcBoardList;
 import com.tjoeun.vo.MvcBoardVO;
 
 public class SelectService implements MvcBoardService {
@@ -41,8 +43,24 @@ public class SelectService implements MvcBoardService {
 		
 		//	테이블에 저장된 전체 글의 개수를 얻어오는 메소드를 실행한다.
 		int totalCount = mvcBoardDAO.selectCount();
-		logger.info("전체 글의 개쉬: {}", totalCount);
+		//logger.info("전체 글의 개수: {}", totalCount);
 		
+		//	1페이지 분량의 글 목록과 페이지 작업에 사용할 8개의 변수를 기억하는 MvcBoardList 클래스의 bean을 얻어온다.
+		MvcBoardList mvcBoardList = ctx.getBean("mvcBoardList", MvcBoardList.class);
+		//	jsp로 작업할 때 처럼 생성자를 사용해서 초기화가 불가능하므로 MvcBoardList 클래스의 bean을 얻어온 후,
+		//	8개의 변수를 초기화시키는 메소드를 실행한다.
+		mvcBoardList.initMvcBoardList(pageSize, totalCount, currentPage);
+		//logger.info("{}", mvcBoardList);
+		
+		//	MvcBoardList의 1페이지 분량의 글 목록을 기억하는 ArrayList에 1페이지 분량의 글 목록을 얻어와서 넣어주는 메소드를 실행한다.
+		HashMap<String, Integer> hmap = new HashMap<String, Integer>();
+		hmap.put("startNo", mvcBoardList.getStartNo());
+		hmap.put("endNo", mvcBoardList.getEndNo());
+		mvcBoardList.setList(mvcBoardDAO.selectList(hmap)); 
+		//logger.info("{}", mvcBoardList.getList());
+		
+		//	list.jsp로 넘겨줄 데이터를 Model 인터페이스 객체에 넣어준다.
+		model.addAttribute("boardList", mvcBoardList);
 	}
 
 }

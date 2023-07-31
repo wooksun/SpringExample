@@ -68,9 +68,14 @@
 				<td>
 					<c:set var="subject" value="${fn:replace(vo.subject, '<', '&lt;')}"/>
 					<c:set var="subject" value="${fn:replace(subject, '>', '&gt;')}"/>
-					<a href="increment.nhn?idx=${vo.idx}&currentPage=${boardList.currentPage}">
+					<a href="increment?idx=${vo.idx}&currentPage=${boardList.currentPage}">
 						${subject}
 					</a> 
+					
+					<c:if test="${vo.hit > 10}">
+						<img alt="HOT" src="./images/hot.gif"/>
+					</c:if>
+					
 				</td>
 				<td align="center">
 					<c:set var="subject" value="${fn:replace(vo.name, '<', '&lt;')}"/>

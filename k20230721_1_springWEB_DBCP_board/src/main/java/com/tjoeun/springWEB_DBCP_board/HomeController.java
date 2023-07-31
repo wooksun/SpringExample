@@ -15,9 +15,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.tjoeun.service.ContentViewService;
+import com.tjoeun.service.DeleteService;
+import com.tjoeun.service.IncrementService;
 import com.tjoeun.service.InsertService;
 import com.tjoeun.service.MvcBoardService;
 import com.tjoeun.service.SelectService;
+import com.tjoeun.service.UpdateService;
 import com.tjoeun.vo.MvcBoardVO;
 
 @Controller
@@ -82,7 +86,7 @@ public class HomeController {
 		MvcBoardService service = ctx.getBean("insert", InsertService.class);
 		service.execute(mvcBoardVO);
 		
-		return "insert";
+		return "redirect:list";
 	}
 	*/
 	
@@ -106,16 +110,106 @@ public class HomeController {
 	public String list(HttpServletRequest request, Model model) {
 		logger.info("컨트롤러의 list() 메소드 실행");
 		
-		//	컨트롤러에 "/list"로 요청하는 페이지에서 넘어오는 브라우저에 표시할 페이지 번호가 저장 HttpServletRequest 인터페이스
-		//	객체를 Model 객체에 저장한다.
+		//	컨트롤러에 "/list"로 요청하는 페이지에서 넘어오는 브라우저에 표시할 페이지 번호가 저장된 HttpServletRequest 인터페이스
+		//	객체를 Model 인터페이스 객체에 저장한다.
 		model.addAttribute("request", request);
 		
 		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
 		MvcBoardService service = ctx.getBean("select", SelectService.class);
 		service.execute(model);
 		
-		
 		return "list";
 	}
+	
+	//	조회수를 증가시키는 메소드
+	@RequestMapping("/increment")
+	public String increment(HttpServletRequest request, Model model) {
+		logger.info("컨트롤러의 increment() 메소드 실행");
+		logger.info("idx: {}, currentPage: {}", request.getParameter("idx"), request.getParameter("currentPage"));
+		
+		//	컨트롤러에 "/increment"로 요청하는 페이지에서 넘어오는 클릭한 글의 글번호와 그 글이 있는 표시할 페이지 번호가 저장된 
+		//	HttpServletRequest 인터페이스 객체를 Model 인터페이스 객체에 저장한다.
+		model.addAttribute("request", request);
+		
+		//	조회수를 증가시키는 메소드를 실행한다.
+		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
+		MvcBoardService service = ctx.getBean("increment", IncrementService.class);
+		service.execute(model);
+		
+		//	조회수를 증가시킨 글번호와 작업 후 돌아갈 페이지 번호를 Model 인터페이스 객체에 넣어준다.
+		model.addAttribute("idx", request.getParameter("idx"));
+		model.addAttribute("currentPage", request.getParameter("currentPage"));
+		
+		return "redirect:contentView";
+	}
 
+	//	조회수를 증가시킨 글 1건을 얻어오는 메소드
+	@RequestMapping("/contentView")
+	public String contentView(HttpServletRequest request, Model model) {
+		logger.info("컨트롤러의 contentView() 메소드 실행");
+		logger.info("idx: {}, currentPage: {}", request.getParameter("idx"), request.getParameter("currentPage"));
+		
+		//	컨트롤러에 "/contentView"로 요청하는 페이지에서 넘어오는 조회수를 증가한 글의 글번호와 그 글이 있는 페이지 번호가 저장된
+		//	HttpServletRequest 인터페이스 객체를 Model 인터페이스 객체에 저장한다.
+		model.addAttribute("request", request);
+		
+		//	조회수를 증가시킨 글 1건을 얻어오는 메소드
+		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
+		MvcBoardService service = ctx.getBean("contentView", ContentViewService.class);
+		service.execute(model);
+		
+		return "contentView";
+	}
+	
+	//	글 1건을 수정하는 메소드
+	@RequestMapping("/update")
+	public String update(HttpServletRequest request, Model model) {
+		logger.info("컨트롤러의 update() 메소드 실행");
+		
+		//	컨트롤러에 "/update"로 요청하는 페이지에서 넘어오는 수정할 글번호와 데이터(제목, 내용), 수정 후 돌아갈 페이지 번호가 저장된
+		//	HttpServletRequest 인터페이스 객체를 Model 인터페이스 객체에 저장한다.
+		model.addAttribute("request", request);
+		
+		//	글 1건을 수정하는 메소드를 실행한다.
+		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
+		MvcBoardService service = ctx.getBean("update", UpdateService.class);
+		service.execute(model);
+		
+		return "redirect:list";
+	}
+	
+	//	글 1건을 삭제하는 메소드
+	@RequestMapping("/delete")
+	public String delete(HttpServletRequest request, Model model) {
+		logger.info("컨트롤러의 delete() 메소드 실행");
+		
+		//	컨트롤러에 "/delete"로 요청하는 페이지에서 넘어오는 삭제할 글번호가 저장된 HttpServletRequest 인터페이스 객체를 
+		//	Model 인터페이스 객체에 저장한다.
+		model.addAttribute("request", request);
+		
+		//	글 1건을 삭제하는 메소드를 실행한다.
+		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
+		MvcBoardService service = ctx.getBean("delete", DeleteService.class);
+		service.execute(model);
+		
+		return "redirect:list";
+	}
+	
+	//	답글을 입력하기 위해 브라우저의 출력할 메인글을 얻어오고, 답글을 입력하는 페이지를 호출하는 메소드
+	@RequestMapping("/reply")
+	public String reply(HttpServletRequest request, Model model) {
+		logger.info("컨트롤러의 reply() 메소드 실행");
+		
+		//	컨트롤러에 "/reply"로 요청하는 페이지에서 넘어오는 답변을 입력할 글의 글번호가 저장된 HttpServletRequest 인터페이스 객체를 
+		//	Model 인터페이스 객체에 저장한다.
+		model.addAttribute("request", request);
+		
+		//	답변을 입력할 글 1건을 얻어오는 메소드를 실행한다.
+		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
+		MvcBoardService service = ctx.getBean("contentView", ContentViewService.class);
+		service.execute(model);
+		
+		return "reply";
+	}
+	
 }
