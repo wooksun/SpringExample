@@ -20,6 +20,7 @@ import com.tjoeun.service.DeleteService;
 import com.tjoeun.service.IncrementService;
 import com.tjoeun.service.InsertService;
 import com.tjoeun.service.MvcBoardService;
+import com.tjoeun.service.ReplyService;
 import com.tjoeun.service.SelectService;
 import com.tjoeun.service.UpdateService;
 import com.tjoeun.vo.MvcBoardVO;
@@ -210,6 +211,24 @@ public class HomeController {
 		service.execute(model);
 		
 		return "reply";
+	}
+	
+	//	답글을 위치에 맞게 삽입하는 메소드
+	@RequestMapping("/replyInsert")
+	public String replyInsert(HttpServletRequest request, Model model) {
+		logger.info("컨트롤러의 replyInsert() 메소드 실행");
+		
+		//	컨트롤러에 "/replyInsert"로 요청하는 페이지에서 넘어오는 원본 글번호, 글그룹, 글레벨, 같은 글그룹에서 글 출력순서,
+		//	답글 작성자 이름, 답글 제목, 답글 내용, 답글을 저장하고 돌아갈 페이지 번호가 HttpServletRequest 인터페이스 객체를 
+		//	Model 인터페이스 객체에 저장한다.
+		model.addAttribute("request", request);
+		
+		//	답글을 위치에 맞게 삽입하는 메소드를 실행한다.
+		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
+		MvcBoardService service = ctx.getBean("reply", ReplyService.class);
+		service.execute(model);
+		
+		return "redirect:list";
 	}
 	
 }

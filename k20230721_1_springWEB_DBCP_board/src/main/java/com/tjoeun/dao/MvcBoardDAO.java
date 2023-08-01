@@ -263,5 +263,53 @@ public class MvcBoardDAO {
 			if (conn != null) { try {conn.close();} catch (SQLException e) {e.printStackTrace();}} 
 		} 
 	}
+
+	//	ReplyService 클래스에서 호출되는 글그룹과 글이 출력되는 순서가 저장된 HashMap 객체를 넘겨받고, 조건에 만족하는 레코드의
+	//	seq를 1씩 증가시키는 update sql 명령을 실행하는 메소드
+	public void replyIncrement(HashMap<String, Integer> hmap) {
+		logger.info("MvcBoardDAO 클래스의 replyIncrement() 매소드 실행");
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = dataSource.getConnection();
+			String sql = "update mvcboard set seq = seq + 1 where gup = ? and seq >= ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, hmap.get("gup"));
+			pstmt.setInt(2, hmap.get("seq"));
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) { try {conn.close();} catch (SQLException e) {e.printStackTrace();}} 
+		} 
+	}
+
+	//	ReplyService 클래스에서 호출되는 답글이 저장된 객체를 넘겨받고, 답글을 저장하는 insert sql 명령을 실행하는 메소드
+	public void replyInsert(MvcBoardVO mvcBoardVO) {
+		logger.info("MvcBoardDAO 클래스의 replyInsert() 매소드 실행");
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = dataSource.getConnection();
+			String sql = "insert into mvcboard(idx, name, subject, content, gup, lev, seq)" + 
+							"values (mvcboard_idx_seq.nextval, ?, ?, ?, ?, ?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, mvcBoardVO.getName());
+			pstmt.setString(2, mvcBoardVO.getSubject());
+			pstmt.setString(3, mvcBoardVO.getContent());
+			pstmt.setInt(4, mvcBoardVO.getGup());
+			pstmt.setInt(5, mvcBoardVO.getLev());
+			pstmt.setInt(6, mvcBoardVO.getSeq());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) { try {conn.close();} catch (SQLException e) {e.printStackTrace();}} 
+		} 
+	}
 	
 }
