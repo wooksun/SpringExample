@@ -1,0 +1,3 @@
+<resources mapping="/images/**" location="/WEB-INF/images" /> <!-- image 경로 -->
+<resources mapping="/css/**" location="/WEB-INF/css" /> <!-- css 경로 -->
+<resources mapping="/js/**" location="/WEB-INF/js" /> <!-- js 경로 -->
